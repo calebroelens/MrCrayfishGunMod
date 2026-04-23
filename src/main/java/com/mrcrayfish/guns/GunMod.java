@@ -2,6 +2,7 @@ package com.mrcrayfish.guns;
 
 import com.mrcrayfish.framework.api.FrameworkAPI;
 import com.mrcrayfish.framework.api.client.FrameworkClientAPI;
+import com.mrcrayfish.guns.blockentity.AirStrikeBlockEntity;
 import com.mrcrayfish.guns.client.ClientHandler;
 import com.mrcrayfish.guns.client.CustomGunManager;
 import com.mrcrayfish.guns.client.KeyBinds;
@@ -20,6 +21,12 @@ import com.mrcrayfish.guns.entity.GrenadeEntity;
 import com.mrcrayfish.guns.entity.MissileEntity;
 import com.mrcrayfish.guns.init.*;
 import com.mrcrayfish.guns.network.PacketHandler;
+import com.mrcrayfish.guns.render.AirstrikeBombRender;
+import com.mrcrayfish.guns.render.AirstrikeRender;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -30,6 +37,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -59,6 +67,7 @@ public class GunMod
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModBlocks.REGISTER.register(bus);
+        ModBlocks.TILE_ENTITIES.register(bus);
         ModContainers.REGISTER.register(bus);
         ModEffects.REGISTER.register(bus);
         ModEnchantments.REGISTER.register(bus);
@@ -77,6 +86,7 @@ public class GunMod
             bus.addListener(KeyBinds::registerKeyMappings);
             bus.addListener(CrosshairHandler::onConfigReload);
             bus.addListener(ClientHandler::onRegisterReloadListener);
+            bus.addListener(ClientHandler::addCreative);
             bus.addListener(ClientHandler::onRegisterCreativeTab);
             bus.addListener(ClientHandler::registerAdditional);
         });
@@ -108,6 +118,7 @@ public class GunMod
     private void onClientSetup(FMLClientSetupEvent event)
     {
         event.enqueueWork(ClientHandler::setup);
+        EntityRenderers.register(ModEntities.BRIDGE_EGG.get(), ThrownItemRenderer::new);
     }
 
     private void onGatherData(GatherDataEvent event)
@@ -127,6 +138,19 @@ public class GunMod
 
     public static boolean isDebugging()
     {
-        return false;//!FMLEnvironment.production;
+        return false; //!FMLEnvironment.production;
+    }
+
+    @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
+
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            EntityRenderers.register(ModEntities.AIRSTRIKE_BOMB_ENTITY.get(), AirstrikeBombRender::new);
+
+            event.enqueueWork(() -> {
+                BlockEntityRenderers.register(ModBlocks.AIRSTRIKE_E.get(), AirstrikeRender::new);
+            });
+        }
     }
 }

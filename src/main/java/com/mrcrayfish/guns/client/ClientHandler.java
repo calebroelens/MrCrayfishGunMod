@@ -21,30 +21,36 @@ import com.mrcrayfish.guns.item.IColored;
 import com.mrcrayfish.guns.item.attachment.IAttachment;
 import com.mrcrayfish.guns.network.PacketHandler;
 import com.mrcrayfish.guns.network.message.C2SMessageAttachments;
+import com.mrcrayfish.guns.network.message.C2SMessageHitboxUsage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.MouseSettingsScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.OutgoingChatMessage;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -129,6 +135,7 @@ public class ClientHandler
         /* Weapons */
         ModelOverrides.register(ModItems.ASSAULT_RIFLE.get(), new SimpleModel(SpecialModels.ASSAULT_RIFLE::getModel));
         ModelOverrides.register(ModItems.BAZOOKA.get(), new SimpleModel(SpecialModels.BAZOOKA::getModel));
+        ModelOverrides.register(ModItems.MEME_BAZOOKA.get(), new SimpleModel(SpecialModels.BAZOOKA::getModel));
         ModelOverrides.register(ModItems.GRENADE_LAUNCHER.get(), new GrenadeLauncherModel());
         ModelOverrides.register(ModItems.HEAVY_RIFLE.get(), new SimpleModel(SpecialModels.HEAVY_RIFLE::getModel));
         ModelOverrides.register(ModItems.MACHINE_PISTOL.get(), new SimpleModel(SpecialModels.MACHINE_PISTOL::getModel));
@@ -177,10 +184,14 @@ public class ClientHandler
             {
                 PacketHandler.getPlayChannel().sendToServer(new C2SMessageAttachments());
             }
-            /*else if(event.getKey() == GLFW.GLFW_KEY_KP_9)
-            {
-                mc.setScreen(new EditorScreen(null, new Debug.Menu()));
-            }*/
+            if(event.getKey() == GLFW.GLFW_KEY_B){
+                boolean enabled_hit_boxes = mc.getEntityRenderDispatcher().shouldRenderHitBoxes();
+                if(enabled_hit_boxes){
+                    // Send packet to server
+                    PacketHandler.getPlayChannel().sendToServer(new C2SMessageHitboxUsage(true));
+                }
+            }
+
         }
     }
 
@@ -194,6 +205,29 @@ public class ClientHandler
     public static void registerAdditional(ModelEvent.RegisterAdditional event)
     {
         event.register(new ResourceLocation(Reference.MOD_ID, "special/test"));
+    }
+
+    public static void addCreative(CreativeModeTabEvent.BuildContents event){
+        if(event.getTab() == CreativeModeTabs.REDSTONE_BLOCKS){
+            event.accept(ModBlocks.BRIDGE_GLASS);
+            event.accept(ModBlocks.MAP_BEACON);
+            event.accept(ModBlocks.AIRSTRIKE);
+        }
+        if(event.getTab() == CreativeModeTabs.COMBAT){
+            event.accept(ModItems.DUPLO_BASIC);
+            event.accept(ModItems.BRIDGE_EGG);
+            event.accept(ModItems.BRIDGE_EGG_PLUS);
+            event.accept(ModItems.BRIDGE_EGG_TSUNAMI);
+            event.accept(ModItems.AIRSTRIKE);
+            event.accept(ModItems.AIRSTRIKE_ORIGINAL);
+            event.accept(ModItems.AIRSTRIKE_CLUSTER);
+            event.accept(ModItems.DOEI_SWORD);
+            event.accept(ModItems.GAMEPLAY_MAP);
+            event.accept(ModItems.GAMEPLAY_EMPTY_MAP);
+        }
+        if(event.getTab() == CreativeModeTabs.FOOD_AND_DRINKS){
+            event.accept(ModItems.LASAGNA);
+        }
     }
 
     public static void onRegisterCreativeTab(CreativeModeTabEvent.Register event)
@@ -235,26 +269,4 @@ public class ClientHandler
     {
         return new EditorScreen(Minecraft.getInstance().screen, menu);
     }
-
-    /* Uncomment for debugging headshot hit boxes */
-
-    /*@SubscribeEvent
-    @SuppressWarnings("unchecked")
-    public static void onRenderLiving(RenderLivingEvent.Post event)
-    {
-        LivingEntity entity = event.getEntity();
-        IHeadshotBox<LivingEntity> headshotBox = (IHeadshotBox<LivingEntity>) BoundingBoxManager.getHeadshotBoxes(entity.getType());
-        if(headshotBox != null)
-        {
-            AxisAlignedBB box = headshotBox.getHeadshotBox(entity);
-            if(box != null)
-            {
-                WorldRenderer.drawBoundingBox(event.getMatrixStack(), event.getBuffers().getBuffer(RenderType.getLines()), box, 1.0F, 1.0F, 0.0F, 1.0F);
-
-                AxisAlignedBB boundingBox = entity.getBoundingBox().offset(entity.getPositionVec().inverse());
-                boundingBox = boundingBox.grow(Config.COMMON.gameplay.growBoundingBoxAmount.get(), 0, Config.COMMON.gameplay.growBoundingBoxAmount.get());
-                WorldRenderer.drawBoundingBox(event.getMatrixStack(), event.getBuffers().getBuffer(RenderType.getLines()), boundingBox, 0.0F, 1.0F, 1.0F, 1.0F);
-            }
-        }
-    }*/
 }

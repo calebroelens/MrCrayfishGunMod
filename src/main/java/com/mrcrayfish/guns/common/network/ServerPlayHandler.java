@@ -20,6 +20,7 @@ import com.mrcrayfish.guns.interfaces.IProjectileFactory;
 import com.mrcrayfish.guns.item.GunItem;
 import com.mrcrayfish.guns.item.IColored;
 import com.mrcrayfish.guns.network.PacketHandler;
+import com.mrcrayfish.guns.network.message.C2SMessageHitboxUsage;
 import com.mrcrayfish.guns.network.message.C2SMessageShoot;
 import com.mrcrayfish.guns.network.message.S2CMessageBulletTrail;
 import com.mrcrayfish.guns.network.message.S2CMessageGunSound;
@@ -29,9 +30,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.OutgoingChatMessage;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -63,6 +68,16 @@ import java.util.function.Predicate;
 public class ServerPlayHandler
 {
     private static final Predicate<LivingEntity> HOSTILE_ENTITIES = entity -> entity.getSoundSource() == SoundSource.HOSTILE && !(entity instanceof NeutralMob) && !Config.COMMON.aggroMobs.exemptEntities.get().contains(EntityType.getKey(entity.getType()).toString());
+
+    public static void handleHitboxChange(C2SMessageHitboxUsage message, ServerPlayer player){
+        if(message.getHitboxState() && player != null){
+            Level world = player.level;
+            if(world.getServer() != null && message.getHitboxState()){
+                world.getServer().getPlayerList().broadcastSystemMessage(Component.literal(String.format("%s has enabled hitboxes", player.getDisplayName())), false);
+            }
+        }
+    }
+
 
     /**
      * Fires the weapon the player is currently holding.

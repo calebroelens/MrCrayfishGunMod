@@ -1,5 +1,6 @@
 {
   "values": [
+    "cgm:bridge_glass",
     "#forge:glass_panes",
     "#forge:glass",
     "#minecraft:candles",

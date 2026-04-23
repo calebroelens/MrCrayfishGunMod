@@ -5,6 +5,7 @@
     "item.cgm.sniper_rifle": "Sniper Rifle",
     "item.cgm.grenade_launcher": "Grenade Launcher",
     "item.cgm.bazooka": "Bazooka",
+    "item.cgm.meme_bazooka": "Meme Bazooka",
     "item.cgm.mini_gun": "Minigun",
     "item.cgm.rifle": "Rifle",
     "item.cgm.assault_rifle": "Assault Rifle",
@@ -146,5 +147,25 @@
     "cgm.action.steady_aim": "Steady Aim",
     "cgm.button.config.tooltip": "Config Options",
     "cgm.chat.open_curseforge_page": "Open CurseForge Page",
-    "cgm.chat.install_configured": "Install %s to access config options"
+    "cgm.chat.install_configured": "Install %s to access config options",
+
+    "item.cgm.bridge_glass": "Bridge glass",
+    "block.cgm.bridge_glass": "Bridge glass",
+
+    "block.cgm.airstrike_block": "Air Strike Spawner",
+
+    "item.cgm.airstrike": "Airstrike",
+    "item.cgm.airstrike_original": "Airstrike Original",
+    "item.cgm.airstrike_cluster": "Airstrike Cluster",
+
+    "item.cgm.duplo_basic": "Basic duplo",
+    "item.cgm.bridge_egg": "Bridge egg",
+    "item.cgm.bridge_egg_plus": "Bridge egg +",
+    "item.cgm.bridge_egg_tsunami": "Bridge egg Tsunami",
+    "item.cgm.lasagna": "Lenny's fresh lasagna",
+    "item.cgm.doei_sword": "Doei",
+    "item.cgm.gameplay_map": "Gameplay Map",
+    "item.cgm.gameplay_empty_map": "Empty Gameplay Map",
+    "block.cgm.map_beacon": "Map Beacon",
+    "item.cgm.map_beacon": "Map Beacon"
 }

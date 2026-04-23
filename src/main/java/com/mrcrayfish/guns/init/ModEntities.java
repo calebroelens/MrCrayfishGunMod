@@ -1,11 +1,7 @@
 package com.mrcrayfish.guns.init;
 
 import com.mrcrayfish.guns.Reference;
-import com.mrcrayfish.guns.entity.GrenadeEntity;
-import com.mrcrayfish.guns.entity.MissileEntity;
-import com.mrcrayfish.guns.entity.ProjectileEntity;
-import com.mrcrayfish.guns.entity.ThrowableGrenadeEntity;
-import com.mrcrayfish.guns.entity.ThrowableStunGrenadeEntity;
+import com.mrcrayfish.guns.entity.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -28,6 +24,18 @@ public class ModEntities
     public static final RegistryObject<EntityType<MissileEntity>> MISSILE = registerBasic("missile", MissileEntity::new);
     public static final RegistryObject<EntityType<ThrowableGrenadeEntity>> THROWABLE_GRENADE = registerBasic("throwable_grenade", ThrowableGrenadeEntity::new);
     public static final RegistryObject<EntityType<ThrowableStunGrenadeEntity>> THROWABLE_STUN_GRENADE = registerBasic("throwable_stun_grenade", ThrowableStunGrenadeEntity::new);
+    public static final RegistryObject<EntityType<AirStrikeBombEntity>> AIRSTRIKE_BOMB_ENTITY = REGISTER.register(
+            "airstrike_bomb", () -> EntityType.Builder.<AirStrikeBombEntity>of(AirStrikeBombEntity::new, MobCategory.MISC)
+                    .sized(0.5f, 0.5f)
+                    .clientTrackingRange(512)
+                    .build("airstrike_bomb")
+    );
+
+    public static final RegistryObject<EntityType<BridgeEggProjectileEntity>> BRIDGE_EGG = REGISTER.register("bridge_egg", () ->
+            EntityType.Builder.<BridgeEggProjectileEntity>of(BridgeEggProjectileEntity::new, MobCategory.MISC)
+                    .sized(0.5f, 0.5f)
+                    .immuneTo(ModBlocks.BRIDGE_GLASS.get())
+                    .build("bridge_egg"));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> registerBasic(String id, BiFunction<EntityType<T>, Level, T> function)
     {

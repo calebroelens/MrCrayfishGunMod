@@ -8,6 +8,7 @@ import com.mrcrayfish.guns.common.Gun.Projectile;
 import com.mrcrayfish.guns.common.ModTags;
 import com.mrcrayfish.guns.common.SpreadTracker;
 import com.mrcrayfish.guns.event.GunProjectileHitEvent;
+import com.mrcrayfish.guns.init.ModBlocks;
 import com.mrcrayfish.guns.init.ModDamageTypes;
 import com.mrcrayfish.guns.init.ModEnchantments;
 import com.mrcrayfish.guns.init.ModSyncedDataKeys;
@@ -26,13 +27,16 @@ import com.mrcrayfish.guns.util.GunModifierHelper;
 import com.mrcrayfish.guns.util.ReflectionUtil;
 import com.mrcrayfish.guns.util.math.ExtendedEntityRayTraceResult;
 import com.mrcrayfish.guns.world.ProjectileExplosion;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.main.GameConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
@@ -43,11 +47,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -82,6 +82,8 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import static com.mrcrayfish.guns.block.BridgeGlass.STAGE;
 
 public class ProjectileEntity extends Entity implements IEntityAdditionalSpawnData
 {
@@ -439,14 +441,17 @@ public class ProjectileEntity extends Entity implements IEntityAdditionalSpawnDa
 
             if(Config.COMMON.gameplay.griefing.enableGlassBreaking.get() && state.is(ModTags.Blocks.FRAGILE))
             {
-                float destroySpeed = state.getDestroySpeed(this.level, pos);
-                if(destroySpeed >= 0)
-                {
-                    float chance = Config.COMMON.gameplay.griefing.fragileBaseBreakChance.get().floatValue() / (destroySpeed + 1);
-                    if(this.random.nextFloat() < chance)
-                    {
-                        this.level.destroyBlock(pos, Config.COMMON.gameplay.griefing.fragileBlockDrops.get());
+                if(block.getName().contains(Component.literal("Bridge glass"))){
+                    int next_state = state.getValue(STAGE) == 3 ? 4 : state.getValue(STAGE) + 1;
+                    if(next_state >= 3){
+                        this.level.destroyBlock(pos, false);
                     }
+                    else {
+                        this.level.setBlockAndUpdate(pos, state.setValue(STAGE, next_state));
+                    }
+
+                } else {
+                    this.level.destroyBlock(pos, Config.COMMON.gameplay.griefing.fragileBlockDrops.get());
                 }
             }
 
@@ -538,12 +543,41 @@ public class ProjectileEntity extends Entity implements IEntityAdditionalSpawnDa
         }
 
         DamageSource source = ModDamageTypes.Sources.projectile(this.level.registryAccess(), this, this.shooter);
-        entity.hurt(source, damage);
+        // Before sending the hurt damage, save the current health of the entity
+        float beforeHurtHealth = 0;
+        float afterHurtHealth = 0;
+        boolean dead = false;
+        if(entity instanceof LivingEntity){
+            beforeHurtHealth = ((LivingEntity) entity).getHealth();
+            entity.hurt(source, damage);
+            afterHurtHealth = ((LivingEntity) entity).getHealth();
+            dead = !entity.isAlive();
+        }
+        else {
+            entity.hurt(source, damage);
+        }
 
         if(this.shooter instanceof Player)
         {
             int hitType = critical ? S2CMessageProjectileHitEntity.HitType.CRITICAL : headshot ? S2CMessageProjectileHitEntity.HitType.HEADSHOT : S2CMessageProjectileHitEntity.HitType.NORMAL;
             PacketHandler.getPlayChannel().sendToPlayer(() -> (ServerPlayer) this.shooter, new S2CMessageProjectileHitEntity(hitVec.x, hitVec.y, hitVec.z, hitType, entity instanceof Player));
+
+            // Display a message with the health difference
+            if(!dead){
+                String hit_type = headshot ? "HEADSHOT" : "BODY";
+                var hit_type_message = Component.literal(hit_type).withStyle(headshot ? ChatFormatting.GOLD : ChatFormatting.AQUA);
+                float diff_damage = beforeHurtHealth - afterHurtHealth;
+                if(diff_damage > 0){
+                    diff_damage /= 2;
+                }
+                var hit_damage = Component.literal(String.format(" ♡ %s", diff_damage)).withStyle(ChatFormatting.RED);
+                hit_type_message.append(hit_damage);
+                ((Player) this.shooter).displayClientMessage(hit_type_message, true);
+            } else {
+                var message = Component.literal("KILLED ").withStyle(headshot ? ChatFormatting.GOLD : ChatFormatting.AQUA);
+                message.append(entity.getDisplayName()).withStyle(ChatFormatting.RED);
+                ((Player) this.shooter).displayClientMessage(message, true);
+            }
         }
 
         /* Send blood particle to tracking clients. */
