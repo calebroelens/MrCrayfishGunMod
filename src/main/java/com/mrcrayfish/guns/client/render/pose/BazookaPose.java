@@ -106,6 +106,6 @@ public class BazookaPose extends WeaponPose
     @Override
     public boolean canApplySprintingAnimation()
     {
-        return false;
+        return true;
     }
 }

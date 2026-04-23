@@ -145,16 +145,18 @@ public class BulletTrailRenderingHandler
         Matrix4f matrix4f = poseStack.last().pose();
         MultiBufferSource.BufferSource renderTypeBuffer = mc.renderBuffers().bufferSource();
 
+        float trailWidth = 0.035F;
+
         if(trail.isTrailVisible())
         {
             RenderType bulletType = GunRenderType.getBulletTrail();
             VertexConsumer builder = renderTypeBuffer.getBuffer(bulletType);
-            builder.vertex(matrix4f, 0, 0, -0.035F).color(red, green, blue, alpha).uv2(15728880).endVertex();
-            builder.vertex(matrix4f, 0, 0, 0.035F).color(red, green, blue, alpha).uv2(15728880).endVertex();
+            builder.vertex(matrix4f, 0, 0, -trailWidth).color(red, green, blue, alpha).uv2(15728880).endVertex();
+            builder.vertex(matrix4f, 0, 0, trailWidth).color(red, green, blue, alpha).uv2(15728880).endVertex();
             builder.vertex(matrix4f, 0, -trailLength, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
             builder.vertex(matrix4f, 0, -trailLength, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
-            builder.vertex(matrix4f, -0.035F, 0, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
-            builder.vertex(matrix4f, 0.035F, 0, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
+            builder.vertex(matrix4f, -trailWidth, 0, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
+            builder.vertex(matrix4f, trailWidth, 0, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
             builder.vertex(matrix4f, 0, -trailLength, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
             builder.vertex(matrix4f, 0, -trailLength, 0).color(red, green, blue, alpha).uv2(15728880).endVertex();
             Minecraft.getInstance().renderBuffers().bufferSource().endBatch(bulletType);

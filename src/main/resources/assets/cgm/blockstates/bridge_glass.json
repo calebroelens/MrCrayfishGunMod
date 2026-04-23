@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "stage=0": {"model":  "cgm:block/green_bridge_glass"},
+    "stage=1": {"model":  "cgm:block/yellow_bridge_glass"},
+    "stage=2": {"model":  "cgm:block/orange_bridge_glass"},
+    "stage=3": {"model":  "cgm:block/red_bridge_glass"}
+  }
+}

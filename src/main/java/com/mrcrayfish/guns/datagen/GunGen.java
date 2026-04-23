@@ -9,6 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 
+import java.sql.Ref;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -65,6 +66,27 @@ public class GunGen extends GunProvider
                 .setProjectileSize(0.2F)
                 .setProjectileSpeed(2.0F)
                 .setProjectileLife(150)
+                .setFireSound(ModSounds.ITEM_BAZOOKA_FIRE.get())
+                .setReloadSound(ModSounds.ITEM_PISTOL_RELOAD.get())
+                .setMuzzleFlash(2.0, 0.0, 4.3, -8.01)
+                .setZoom(Gun.Modules.Zoom.builder()
+                        .setFovModifier(0.5F)
+                        .setOffset(3.5, 4.3, 16.0))
+                .build());
+
+        this.addGun(new ResourceLocation(Reference.MOD_ID, "meme_bazooka"), Gun.Builder.create()
+                .setFireRate(5)
+                .setGripType(GripType.BAZOOKA)
+                .setMaxAmmo(100)
+                .setRecoilAngle(5F)
+                .setRecoilDurationOffset(0.05F)
+                .setAmmo(ModItems.MISSILE.get())
+                .setDamage(10.0F)
+                .setProjectileVisible(true)
+                .setProjectileSize(1.0F)
+                .setProjectileSpeed(20.0F)
+                .setProjectileLife(150)
+                .setReloadAmount(10)
                 .setFireSound(ModSounds.ITEM_BAZOOKA_FIRE.get())
                 .setReloadSound(ModSounds.ITEM_PISTOL_RELOAD.get())
                 .setMuzzleFlash(2.0, 0.0, 4.3, -8.01)

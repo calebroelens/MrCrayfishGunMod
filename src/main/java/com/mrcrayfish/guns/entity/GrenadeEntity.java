@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class GrenadeEntity extends ProjectileEntity
 {
+
     public GrenadeEntity(EntityType<? extends ProjectileEntity> entityType, Level world)
     {
         super(entityType, world);

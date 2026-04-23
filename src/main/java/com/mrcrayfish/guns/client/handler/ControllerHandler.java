@@ -108,10 +108,12 @@ public class ControllerHandler
 
                 Scope scope = Gun.getScope(heldItem);
                 Controller controller = Controllable.getController();
+                //noinspection removal
                 if(scope != null && scope.isStable() && controller != null && controller.isButtonPressed(GunButtonBindings.STEADY_AIM.getButton()))
                 {
-                    event.setYawSpeed(event.getYawSpeed() / 2.0F);
-                    event.setPitchSpeed(event.getPitchSpeed() / 2.0F);
+                    double scopeSensitivity = Config.CLIENT.controls.scopeSensitivity.get();
+                    event.setYawSpeed(event.getYawSpeed() / (float) scopeSensitivity);
+                    event.setPitchSpeed(event.getPitchSpeed() / (float) scopeSensitivity);
                 }
             }
         }

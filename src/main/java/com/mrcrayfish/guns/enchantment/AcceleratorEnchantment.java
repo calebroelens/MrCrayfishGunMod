@@ -15,7 +15,7 @@ public class AcceleratorEnchantment extends GunEnchantment
     @Override
     public int getMaxLevel()
     {
-        return 2;
+        return 1028;
     }
 
     @Override
