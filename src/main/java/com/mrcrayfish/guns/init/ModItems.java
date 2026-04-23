@@ -85,6 +85,7 @@ public class ModItems
                           .explosionEveryXTick(5)
                           .randomRadius(60)
                           .countPerStrike(6)
+                          .visualRadius(60)
             )
     );
 

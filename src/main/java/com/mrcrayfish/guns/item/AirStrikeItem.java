@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
@@ -55,6 +56,10 @@ public class AirStrikeItem extends Item {
             AirStrikeBlockEntity airStrikeBlockEntity = (AirStrikeBlockEntity) level.getBlockEntity(targetPos);
             if(airStrikeBlockEntity != null){
                 airStrikeBlockEntity.strikeProperties = airStrikeProperties;
+                /* Send update */
+                airStrikeBlockEntity.setChanged();
+                BlockState blockState = level.getBlockState(targetPos);
+                level.sendBlockUpdated(targetPos, blockState, blockState, 3);
             }
         }
 

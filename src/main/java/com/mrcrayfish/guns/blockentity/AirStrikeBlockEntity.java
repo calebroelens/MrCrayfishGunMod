@@ -4,12 +4,15 @@ import com.mrcrayfish.guns.blockentity.data.AirStrikeProperties;
 import com.mrcrayfish.guns.init.ModBlocks;
 import com.mrcrayfish.guns.init.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 public class AirStrikeBlockEntity extends BlockEntity {
 
@@ -26,6 +29,7 @@ public class AirStrikeBlockEntity extends BlockEntity {
     public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T be) {
         AirStrikeBlockEntity entity = (AirStrikeBlockEntity) be;
         if(entity.fuseTimer == 0){
+            /* Sync the properties */
             playAirstrikeSound(level, pos);
         }
         if (!entity.fused) {
@@ -33,6 +37,8 @@ public class AirStrikeBlockEntity extends BlockEntity {
                 entity.fused = true;
             } else {
                 entity.fuseTimer++;
+                entity.setChanged();
+                level.sendBlockUpdated(pos, state, state, 3);
             }
             return;
         }
@@ -66,6 +72,48 @@ public class AirStrikeBlockEntity extends BlockEntity {
             if(bomb == null) continue;
             bomb.setPos(x, y, z);
             level.addFreshEntity(bomb);
+        }
+    }
+
+    /* Sync server with client so the render is correct */
+
+    @Override
+    protected void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putInt("FuseTimer", this.fuseTimer);
+        tag.put("StrikeProps", this.strikeProperties.save()); // ← ADD THIS
+    }
+
+    @Override
+    public void load(@NotNull CompoundTag tag) {
+        super.load(tag);
+        this.fuseTimer = tag.getInt("FuseTimer");
+        if (tag.contains("StrikeProps")) {              // ← ADD THIS
+            this.strikeProperties = AirStrikeProperties.load(tag.getCompound("StrikeProps"));
+        }
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = new CompoundTag();
+
+        tag.putInt("FuseTimer", fuseTimer);
+        tag.put("StrikeProps", strikeProperties.save()); // only sync
+
+        return tag;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        this.fuseTimer = tag.getInt("FuseTimer");
+
+        if (tag.contains("StrikeProps")) {
+            this.strikeProperties = AirStrikeProperties.load(tag.getCompound("StrikeProps"));
         }
     }
 }

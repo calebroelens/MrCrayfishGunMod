@@ -29,7 +29,8 @@ public class AirstrikeRender implements BlockEntityRenderer<AirStrikeBlockEntity
         VertexConsumer builder = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        float radius = 20f;
+        float progress = (float) blockEntity.fuseTimer / blockEntity.strikeProperties.fuse;
+        float radius = 1f + (blockEntity.strikeProperties.visualRadius - 1) * progress;
         float height = 512f;
         float r = 1.0f, g = 0.2f, b = 0.2f, a = 0.8f;
         int segments = 64; // Smoothness of the circle
@@ -60,35 +61,6 @@ public class AirstrikeRender implements BlockEntityRenderer<AirStrikeBlockEntity
         }
 
         poseStack.popPose();
-
-//        poseStack.pushPose();
-//        poseStack.translate(0.5, 0.5, 0.5);
-//
-//        VertexConsumer builder = bufferSource.getBuffer(RenderType.lightning());
-//
-//        Matrix4f matrix = poseStack.last().pose();
-//
-//        float width = 0.5f;
-//        float height = 512f; // How high the laser goes
-//        float r = 1.0f, g = 0.2f, b = 0.2f, a = 0.8f; // Red laser
-//
-//        // Pulsing effect based on game time
-//        float pulse = (float) Math.sin(blockEntity.fuseTimer * 0.3f) * 0.3f + 0.7f;
-//        a *= pulse;
-//
-//        // Draw laser beam as a quad facing X
-//        builder.vertex(matrix, -width, 0, 0).color(r, g, b, a).endVertex();
-//        builder.vertex(matrix, width, 0, 0).color(r, g, b, a).endVertex();
-//        builder.vertex(matrix, width, height, 0).color(r, g, b, 0f).endVertex(); // fade at top
-//        builder.vertex(matrix, -width, height, 0).color(r, g, b, 0f).endVertex();
-//
-//        // Draw laser beam as a quad facing Z
-//        builder.vertex(matrix, 0, 0, -width).color(r, g, b, a).endVertex();
-//        builder.vertex(matrix, 0, 0, width).color(r, g, b, a).endVertex();
-//        builder.vertex(matrix, 0, height, width).color(r, g, b, 0f).endVertex();
-//        builder.vertex(matrix, 0, height, -width).color(r, g, b, 0f).endVertex();
-//
-//        poseStack.popPose();
     }
 
     @Override
