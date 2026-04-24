@@ -8,6 +8,8 @@ import com.mrcrayfish.guns.item.*;
 import com.mrcrayfish.guns.item.attachment.impl.Barrel;
 import com.mrcrayfish.guns.item.attachment.impl.Stock;
 import com.mrcrayfish.guns.item.attachment.impl.UnderBarrel;
+import com.mrcrayfish.guns.render.airstrike_renders.circular.AirStrikeCircularRenderData;
+import com.mrcrayfish.guns.render.airstrike_renders.party.AirStrikeCircularPartyRenderData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -65,15 +67,20 @@ public class ModItems
     public static final RegistryObject<Item> AIRSTRIKE = REGISTER.register(
             "airstrike",
             () -> new AirStrikeItem(
-                    new Item.Properties().stacksTo(16),
-                    new AirStrikeProperties().explosionEveryXTick(10)
+                    new Item.Properties()
+                            .stacksTo(16),
+                    new AirStrikeProperties()
+                            .explosionEveryXTick(10)
+                            .render(
+                                    new AirStrikeCircularRenderData()
+                            )
             )
     );
     public static final RegistryObject<Item> AIRSTRIKE_ORIGINAL = REGISTER.register(
             "airstrike_original",
             () -> new AirStrikeItem(
                     new Item.Properties().stacksTo(1),
-                    new AirStrikeProperties()
+                    new AirStrikeProperties().render(new AirStrikeCircularPartyRenderData())
             )
     );
 
@@ -85,7 +92,11 @@ public class ModItems
                           .explosionEveryXTick(5)
                           .randomRadius(60)
                           .countPerStrike(6)
-                          .visualRadius(60)
+                          .render(
+                                  new AirStrikeCircularRenderData()
+                                          .radius(60)
+                                          .color(1F, 0.647F, 0F, 0.8F)
+                          )
             )
     );
 

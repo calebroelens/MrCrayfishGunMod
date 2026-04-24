@@ -1,6 +1,10 @@
 package com.mrcrayfish.guns.blockentity.data;
 
 import com.mrcrayfish.guns.init.ModEntities;
+import com.mrcrayfish.guns.render.AirStrikeRenderData;
+import com.mrcrayfish.guns.render.AirStrikeRenderType;
+import com.mrcrayfish.guns.render.airstrike_renders.circular.AirStrikeCircularRenderData;
+import com.mrcrayfish.guns.render.airstrike_renders.party.AirStrikeCircularPartyRenderData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -10,14 +14,24 @@ public class AirStrikeProperties {
     public int fuse = 70;
     public int explosionsDuration = 60;
     public int randomRadius = 20;
-    public int visualRadius = 20;
     public int countPerStrike = 3;
     public int explosionEveryXTick = 1;
     EntityType<? extends Entity> entityType;
+    /* Visuals */
+    public AirStrikeRenderData renderData;
 
     public AirStrikeProperties fuse(int fuse) {
         this.fuse = fuse;
         return this;
+    }
+
+    public AirStrikeProperties render(AirStrikeRenderData data) {
+        this.renderData = data;
+        return this;
+    }
+
+    public AirStrikeRenderType buildRender() {
+        return renderData != null ? renderData.build() : null;
     }
 
     public EntityType<? extends Entity> getEntityType() {
@@ -25,11 +39,6 @@ public class AirStrikeProperties {
             return ModEntities.AIRSTRIKE_BOMB_ENTITY.get();
         }
         return entityType;
-    }
-
-    public AirStrikeProperties visualRadius(int visualRadius) {
-        this.visualRadius = visualRadius;
-        return this;
     }
 
     public AirStrikeProperties explosionsDuration(int explosionsDuration) {
@@ -63,12 +72,16 @@ public class AirStrikeProperties {
         tag.putInt("Fuse", fuse);
         tag.putInt("ExplosionsDuration", explosionsDuration);
         tag.putInt("RandomRadius", randomRadius);
-        tag.putInt("VisualRadius", visualRadius);
         tag.putInt("CountPerStrike", countPerStrike);
         tag.putInt("ExplosionEveryXTick", explosionEveryXTick);
 
         if (entityType != null) {
             tag.putString("EntityType", EntityType.getKey(entityType).toString());
+        }
+
+        if (renderData != null) {
+            tag.putString("RenderType", renderData.id());
+            tag.put("RenderData", renderData.save());
         }
 
         return tag;
@@ -80,7 +93,6 @@ public class AirStrikeProperties {
         props.fuse = tag.getInt("Fuse");
         props.explosionsDuration = tag.getInt("ExplosionsDuration");
         props.randomRadius = tag.getInt("RandomRadius");
-        props.visualRadius = tag.getInt("VisualRadius");
         props.countPerStrike = tag.getInt("CountPerStrike");
         props.explosionEveryXTick = tag.getInt("ExplosionEveryXTick");
 
@@ -90,6 +102,14 @@ public class AirStrikeProperties {
             });
         }
 
+        String type = tag.getString("RenderType");
+        CompoundTag data = tag.getCompound("RenderData");
+
+        props.renderData = switch (type) {
+            case "circular" -> AirStrikeCircularRenderData.load(data);
+            case "circular_party" -> AirStrikeCircularPartyRenderData.load(data);
+            default -> null;
+        };
         return props;
     }
 }

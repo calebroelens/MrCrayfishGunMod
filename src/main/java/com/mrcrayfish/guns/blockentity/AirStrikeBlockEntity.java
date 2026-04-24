@@ -37,13 +37,12 @@ public class AirStrikeBlockEntity extends BlockEntity {
                 entity.fused = true;
             } else {
                 entity.fuseTimer++;
-                entity.setChanged();
-                level.sendBlockUpdated(pos, state, state, 3);
+                sync(entity, level, pos, state);
             }
             return;
         }
         // Airstrike phase
-        if (entity.explosionTimer >= entity.strikeProperties.explosionsDuration) {
+        if (entity.explosionTimer > entity.strikeProperties.explosionsDuration) {
             level.destroyBlock(pos, true);
             return;
         }
@@ -51,6 +50,11 @@ public class AirStrikeBlockEntity extends BlockEntity {
             spawnAirstrikeBomb(entity, level, pos);
         }
         entity.explosionTimer++;
+    }
+
+    private static <T extends BlockEntity> void sync(T blockEntity, Level level, BlockPos pos, BlockState state){
+        blockEntity.setChanged();
+        level.sendBlockUpdated(pos, state, state, 3);
     }
 
     private static void playAirstrikeSound(Level level, BlockPos pos){
