@@ -560,24 +560,17 @@ public class ProjectileEntity extends Entity implements IEntityAdditionalSpawnDa
         if(this.shooter instanceof Player)
         {
             int hitType = critical ? S2CMessageProjectileHitEntity.HitType.CRITICAL : headshot ? S2CMessageProjectileHitEntity.HitType.HEADSHOT : S2CMessageProjectileHitEntity.HitType.NORMAL;
-            PacketHandler.getPlayChannel().sendToPlayer(() -> (ServerPlayer) this.shooter, new S2CMessageProjectileHitEntity(hitVec.x, hitVec.y, hitVec.z, hitType, entity instanceof Player));
 
-            // Display a message with the health difference
-            if(!dead){
-                String hit_type = headshot ? "HEADSHOT" : "BODY";
-                var hit_type_message = Component.literal(hit_type).withStyle(headshot ? ChatFormatting.GOLD : ChatFormatting.AQUA);
-                float diff_damage = beforeHurtHealth - afterHurtHealth;
-                if(diff_damage > 0){
-                    diff_damage /= 2;
-                }
-                var hit_damage = Component.literal(String.format(" ♡ %s", diff_damage)).withStyle(ChatFormatting.RED);
-                hit_type_message.append(hit_damage);
-                ((Player) this.shooter).displayClientMessage(hit_type_message, true);
-            } else {
-                var message = Component.literal("KILLED ").withStyle(headshot ? ChatFormatting.GOLD : ChatFormatting.AQUA);
-                message.append(entity.getDisplayName()).withStyle(ChatFormatting.RED);
-                ((Player) this.shooter).displayClientMessage(message, true);
+            float diff_damage = beforeHurtHealth - afterHurtHealth;
+            if(diff_damage > 0){
+                diff_damage /= 2;
             }
+
+            PacketHandler.getPlayChannel().sendToPlayer(
+                    () -> (ServerPlayer) this.shooter, new S2CMessageProjectileHitEntity(
+                            hitVec.x, hitVec.y, hitVec.z, hitType, entity instanceof Player, diff_damage, dead
+                    )
+            );
         }
 
         /* Send blood particle to tracking clients. */

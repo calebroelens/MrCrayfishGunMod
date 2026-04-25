@@ -15,24 +15,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  */
 public class PlayerModelHandler
 {
-    /*@SubscribeEvent
-    public void onRenderPlayer(PlayerModelEvent.Render.Post event)
-    {
-        PoseStack poseStack = event.getPoseStack();
-        Player player = event.getPlayer();
-        ItemStack heldItem = player.getOffhandItem();
-        if(!heldItem.isEmpty() && heldItem.getItem() instanceof GunItem)
-        {
-            poseStack.pushPose();
-            Gun gun = ((GunItem) heldItem.getItem()).getModifiedGun(heldItem);
-            if(gun.getGeneral().getGripType().getHeldAnimation().applyOffhandTransforms(player, event.getPlayerModel(), heldItem, poseStack, event.getDeltaTicks()))
-            {
-                MultiBufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-                GunRenderingHandler.get().renderWeapon(player, heldItem, ItemTransforms.TransformType.FIXED, poseStack, buffer, event.getLight(), event.getDeltaTicks());
-            }
-            poseStack.popPose();
-        }
-    }*/
 
     @SubscribeEvent
     public void onRenderPlayer(RenderPlayerEvent.Pre event)
@@ -58,8 +40,5 @@ public class PlayerModelHandler
         model.leftArm.x = 5.0F;
         model.leftArm.y = slim ? 2.5F : 2.0F;
         model.leftArm.z = 0.0F;
-        /*model.head.x = 5.0F;
-        model.leftArm.y = slim ? 2.5F : 2.0F;
-        model.leftArm.z = 0.0F;*/
     }
 }

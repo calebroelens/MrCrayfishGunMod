@@ -5,6 +5,7 @@ import com.mrcrayfish.guns.client.BulletTrail;
 import com.mrcrayfish.guns.client.CustomGunManager;
 import com.mrcrayfish.guns.client.audio.GunShotSound;
 import com.mrcrayfish.guns.client.handler.BulletTrailRenderingHandler;
+import com.mrcrayfish.guns.client.handler.CrosshairHandler;
 import com.mrcrayfish.guns.client.handler.GunRenderingHandler;
 import com.mrcrayfish.guns.common.NetworkGunManager;
 import com.mrcrayfish.guns.init.ModParticleTypes;
@@ -176,9 +177,9 @@ public class ClientPlayHandler
             return;
 
         SoundEvent event = getHitSound(message.isCritical(), message.isHeadshot(), message.isPlayer());
+        CrosshairHandler.onGunHitEntityEvent(message);
         if(event == null)
             return;
-
         mc.getSoundManager().play(SimpleSoundInstance.forUI(event, 1.0F, 1.0F + world.random.nextFloat() * 0.2F));
     }
 
