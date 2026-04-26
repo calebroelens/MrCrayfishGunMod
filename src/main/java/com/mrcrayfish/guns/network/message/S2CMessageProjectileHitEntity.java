@@ -20,10 +20,11 @@ public class S2CMessageProjectileHitEntity extends PlayMessage<S2CMessageProject
     private boolean player;
     private float damage;
     private boolean dead;
+    private int targetEntityId;
 
     public S2CMessageProjectileHitEntity() {}
 
-    public S2CMessageProjectileHitEntity(double x, double y, double z, int type, boolean player,  float damage, boolean dead)
+    public S2CMessageProjectileHitEntity(double x, double y, double z, int type, boolean player,  float damage, boolean dead,  int targetEntityId)
     {
         this.x = x;
         this.y = y;
@@ -32,6 +33,7 @@ public class S2CMessageProjectileHitEntity extends PlayMessage<S2CMessageProject
         this.player = player;
         this.damage = damage;
         this.dead = dead;
+        this.targetEntityId = targetEntityId;
     }
 
     @Override
@@ -44,6 +46,7 @@ public class S2CMessageProjectileHitEntity extends PlayMessage<S2CMessageProject
         buffer.writeBoolean(message.player);
         buffer.writeFloat(message.damage);
         buffer.writeBoolean(message.dead);
+        buffer.writeInt(message.targetEntityId);
     }
 
     @Override
@@ -56,7 +59,8 @@ public class S2CMessageProjectileHitEntity extends PlayMessage<S2CMessageProject
         boolean player = buffer.readBoolean();
         float damage = buffer.readFloat();
         boolean dead = buffer.readBoolean();
-        return new S2CMessageProjectileHitEntity(x, y, z, type, player,  damage, dead);
+        int targetEntityId = buffer.readInt();
+        return new S2CMessageProjectileHitEntity(x, y, z, type, player,  damage, dead,  targetEntityId);
     }
 
     @Override
@@ -104,6 +108,11 @@ public class S2CMessageProjectileHitEntity extends PlayMessage<S2CMessageProject
     public boolean isDead()
     {
         return this.dead;
+    }
+
+    public int getTargetEntityId()
+    {
+        return this.targetEntityId;
     }
 
     public static class HitType

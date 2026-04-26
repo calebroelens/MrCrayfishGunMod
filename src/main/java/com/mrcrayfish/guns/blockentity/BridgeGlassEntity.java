@@ -1,11 +1,10 @@
-package com.mrcrayfish.guns.block;
+package com.mrcrayfish.guns.blockentity;
 
 import com.mrcrayfish.guns.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 
 import static com.mrcrayfish.guns.block.BridgeGlass.STAGE;
 

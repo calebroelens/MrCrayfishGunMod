@@ -12,6 +12,8 @@ import com.mrcrayfish.guns.render.airstrike_renders.circular.AirStrikeCircularRe
 import com.mrcrayfish.guns.render.airstrike_renders.party.AirStrikeCircularPartyRenderData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
@@ -99,6 +101,47 @@ public class ModItems
                           )
             )
     );
+
+    public static final RegistryObject<Item> AIRSTRIKE_BRIDGE = REGISTER.register(
+            "airstrike_bridge",
+            () -> new AirStrikeItem(
+                    new Item.Properties().stacksTo(16),
+                    new AirStrikeProperties()
+                            .explosionEveryXTick(3)
+                            .randomRadius(40)
+                            .countPerStrike(10)
+                            .entityType(ModEntities.BRIDGE_EGG::get)
+                            .render(
+                                    new AirStrikeCircularPartyRenderData()
+                                            .radius(40)
+                            )
+            )
+    );
+
+    public static final RegistryObject<Item> AIRSTRIKE_SNOWY = REGISTER.register(
+            "airstrike_snowy",
+            () -> new AirStrikeItem(
+                    new Item.Properties().stacksTo(16),
+                    new AirStrikeProperties()
+                            .explosionEveryXTick(1)
+                            .randomRadius(25)
+                            .countPerStrike(40)
+                            .entityType(ModEntities.KNOCKBACK_SNOWBALL::get)
+                            .render(
+                                    new AirStrikeCircularRenderData().radius(25).color(1, 1, 1, 0.8F)
+                            )
+            )
+    );
+
+    public static final RegistryObject<Item> AIRSTRIKE_LIGHTNING = REGISTER.register(
+            "airstrike_lightning",
+            () -> new AirStrikeItem(
+                    new Item.Properties().stacksTo(16),
+                    new AirStrikeProperties().explosionEveryXTick(3).randomRadius(60).entityType(() -> EntityType.LIGHTNING_BOLT)
+                            .render(new AirStrikeCircularRenderData().radius(60).color(0F, 0F, 0.55F, 0.8F))
+            )
+    );
+
 
     public static final RegistryObject<Item> LASAGNA = REGISTER.register("lasagna", () -> new LasagnaItem(new Item.Properties().food(
             CustomFoods.LASAGNA

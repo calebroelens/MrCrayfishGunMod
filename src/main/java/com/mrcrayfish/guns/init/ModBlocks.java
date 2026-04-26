@@ -3,6 +3,7 @@ package com.mrcrayfish.guns.init;
 import com.mrcrayfish.guns.Reference;
 import com.mrcrayfish.guns.block.*;
 import com.mrcrayfish.guns.blockentity.AirStrikeBlockEntity;
+import com.mrcrayfish.guns.blockentity.BridgeGlassEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;

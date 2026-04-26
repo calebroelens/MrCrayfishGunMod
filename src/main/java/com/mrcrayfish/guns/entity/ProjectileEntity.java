@@ -568,7 +568,10 @@ public class ProjectileEntity extends Entity implements IEntityAdditionalSpawnDa
 
             PacketHandler.getPlayChannel().sendToPlayer(
                     () -> (ServerPlayer) this.shooter, new S2CMessageProjectileHitEntity(
-                            hitVec.x, hitVec.y, hitVec.z, hitType, entity instanceof Player, diff_damage, dead
+                            hitVec.x, hitVec.y, hitVec.z, hitType, entity instanceof Player,
+                            diff_damage,
+                            dead,
+                            entity.getId()
                     )
             );
         }

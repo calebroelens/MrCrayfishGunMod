@@ -31,6 +31,10 @@ public class ModEntities
                     .build("airstrike_bomb")
     );
 
+    public static final RegistryObject<EntityType<KnockbackSnowball>> KNOCKBACK_SNOWBALL = REGISTER.register(
+            "knockback_snowball", () -> EntityType.Builder.<KnockbackSnowball>of(KnockbackSnowball::new, MobCategory.MISC).build("knockback_snowball")
+    );
+
     public static final RegistryObject<EntityType<BridgeEggProjectileEntity>> BRIDGE_EGG = REGISTER.register("bridge_egg", () ->
             EntityType.Builder.<BridgeEggProjectileEntity>of(BridgeEggProjectileEntity::new, MobCategory.MISC)
                     .sized(0.5f, 0.5f)

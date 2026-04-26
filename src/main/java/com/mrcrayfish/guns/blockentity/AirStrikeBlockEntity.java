@@ -1,17 +1,23 @@
 package com.mrcrayfish.guns.blockentity;
 
 import com.mrcrayfish.guns.blockentity.data.AirStrikeProperties;
+import com.mrcrayfish.guns.entity.BridgeEggProjectileEntity;
 import com.mrcrayfish.guns.init.ModBlocks;
 import com.mrcrayfish.guns.init.ModSounds;
+import com.mrcrayfish.guns.item.BridgeEggItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import org.jetbrains.annotations.NotNull;
 
 public class AirStrikeBlockEntity extends BlockEntity {
@@ -74,6 +80,18 @@ public class AirStrikeBlockEntity extends BlockEntity {
             double z = pos.getZ() + 0.5 + offsetZ;
             Entity bomb = e.strikeProperties.getEntityType().create(level);
             if(bomb == null) continue;
+
+            if(bomb instanceof BridgeEggProjectileEntity){
+                y = 200;
+            }
+            if(bomb instanceof LightningBolt){
+                BlockPos strikePos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 0, z));
+                y = strikePos.getY();
+            }
+            if(bomb instanceof Snowball){
+                BlockPos strikePos = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 0, z));
+                y = Math.min(strikePos.getY() + 50, level.getMaxBuildHeight());
+            }
             bomb.setPos(x, y, z);
             level.addFreshEntity(bomb);
         }

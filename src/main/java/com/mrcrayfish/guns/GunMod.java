@@ -8,6 +8,7 @@ import com.mrcrayfish.guns.client.CustomGunManager;
 import com.mrcrayfish.guns.client.KeyBinds;
 import com.mrcrayfish.guns.client.MetaLoader;
 import com.mrcrayfish.guns.client.handler.CrosshairHandler;
+import com.mrcrayfish.guns.commands.SpawnDummyPlayerCommand;
 import com.mrcrayfish.guns.common.BoundingBoxManager;
 import com.mrcrayfish.guns.common.NetworkGunManager;
 import com.mrcrayfish.guns.common.ProjectileManager;
@@ -90,9 +91,11 @@ public class GunMod
             bus.addListener(ClientHandler::onRegisterCreativeTab);
             bus.addListener(ClientHandler::registerAdditional);
         });
+        MinecraftForge.EVENT_BUS.addListener(SpawnDummyPlayerCommand::onRegisterCommands);  // ADD THIS
         controllableLoaded = ModList.get().isLoaded("controllable");
         backpackedLoaded = ModList.get().isLoaded("backpacked");
         playerReviveLoaded = ModList.get().isLoaded("playerrevive");
+
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event)
@@ -147,7 +150,7 @@ public class GunMod
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.AIRSTRIKE_BOMB_ENTITY.get(), AirstrikeBombRender::new);
-
+            EntityRenderers.register(ModEntities.KNOCKBACK_SNOWBALL.get(), ThrownItemRenderer::new);
             event.enqueueWork(() -> {
                 BlockEntityRenderers.register(ModBlocks.AIRSTRIKE_E.get(), AirstrikeRender::new);
             });

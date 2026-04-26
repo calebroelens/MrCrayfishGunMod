@@ -157,6 +157,9 @@
     "item.cgm.airstrike": "Airstrike",
     "item.cgm.airstrike_original": "Airstrike Original",
     "item.cgm.airstrike_cluster": "Airstrike Cluster",
+    "item.cgm.airstrike_bridge": "Airstrike Bridge Egg",
+    "item.cgm.airstrike_lightning": "Airstrike Lightning",
+    "item.cgm.airstrike_snowy": "Airstrike Snowy",
 
     "item.cgm.duplo_basic": "Basic duplo",
     "item.cgm.bridge_egg": "Bridge egg",

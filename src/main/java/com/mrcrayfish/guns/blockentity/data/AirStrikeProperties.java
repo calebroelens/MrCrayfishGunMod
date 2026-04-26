@@ -9,6 +9,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
+import java.util.function.Supplier;
+
 public class AirStrikeProperties {
 
     public int fuse = 70;
@@ -16,7 +18,7 @@ public class AirStrikeProperties {
     public int randomRadius = 20;
     public int countPerStrike = 3;
     public int explosionEveryXTick = 1;
-    EntityType<? extends Entity> entityType;
+    Supplier<EntityType<? extends Entity>> entityType;
     /* Visuals */
     public AirStrikeRenderData renderData;
 
@@ -38,7 +40,7 @@ public class AirStrikeProperties {
         if (entityType == null) {
             return ModEntities.AIRSTRIKE_BOMB_ENTITY.get();
         }
-        return entityType;
+        return entityType.get();
     }
 
     public AirStrikeProperties explosionsDuration(int explosionsDuration) {
@@ -61,7 +63,7 @@ public class AirStrikeProperties {
         return this;
     }
 
-    public AirStrikeProperties entityType(EntityType<? extends Entity> entityType) {
+    public AirStrikeProperties entityType(Supplier<EntityType<? extends Entity>> entityType) {
         this.entityType = entityType;
         return this;
     }
@@ -76,7 +78,10 @@ public class AirStrikeProperties {
         tag.putInt("ExplosionEveryXTick", explosionEveryXTick);
 
         if (entityType != null) {
-            tag.putString("EntityType", EntityType.getKey(entityType).toString());
+            EntityType<?> type = entityType.get();
+            if (type != null) {
+                tag.putString("EntityType", EntityType.getKey(type).toString());
+            }
         }
 
         if (renderData != null) {
@@ -98,7 +103,7 @@ public class AirStrikeProperties {
 
         if (tag.contains("EntityType")) {
             EntityType.byString(tag.getString("EntityType")).ifPresent(type -> {
-                props.entityType = type;
+                props.entityType = () -> type;
             });
         }
 
